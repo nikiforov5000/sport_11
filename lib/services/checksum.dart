@@ -1,10 +1,8 @@
 import 'package:device_info/device_info.dart';
 
-DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-
-checkIsEmu() async {
-  final em = await devinfo.androidInfo;
+Future<bool> checkIsEmu() async {
+  DeviceInfoPlugin devInfo = DeviceInfoPlugin();
+  final em = await devInfo.androidInfo;
   var phoneModel = em.model;
   var buildProduct = em.product;
   var buildHardware = em.hardware;
