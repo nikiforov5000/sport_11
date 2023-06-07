@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sport_11/screens/play_screen/screens/game_screen.dart';
 
 class PlayScreen extends StatelessWidget {
   static const String id = '/play_screen';
@@ -7,9 +8,7 @@ class PlayScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder(
-      child: Text('PlayScreen()'),
-    );
+    return Scaffold(body: GameScreen());
   }
 }
 
