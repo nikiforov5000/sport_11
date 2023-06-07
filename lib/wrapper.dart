@@ -36,15 +36,11 @@ class _WrapperState extends State<Wrapper> {
   }
 
   Future<String> loadUrlFromDevice() async {
-    print('wrapper -> loadUrlFromDevice');
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey('url')) {
       final String url = prefs.getString('url') ?? '';
-      print('wrapper -> loadUrlFromDevice -> url:$url');
-      return prefs.getString('url') ?? '';
+      return prefs.getString(url) ?? '';
     }
-    print('\t -> url: is empty');
-
     return '';
   }
 
@@ -61,14 +57,14 @@ class _WrapperState extends State<Wrapper> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator();
         } else {
-          if (_isEmu == null || _isEmu == true) {
-            return PlayScreen();
-          } else {
+          // if (_isEmu == null || _isEmu == true) {
+          //   return PlayScreen();
+          // } else {
             if (_url == '') {
               return NoInternetScreen();
             }
             return WebViewScreen(_url);
-          }
+          // }
         }
       },
     );
