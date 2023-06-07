@@ -57,14 +57,14 @@ class _WrapperState extends State<Wrapper> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator();
         } else {
-          // if (_isEmu == null || _isEmu == true) {
-          //   return PlayScreen();
-          // } else {
+          if (_isEmu == null || _isEmu == true) {
+            return PlayScreen();
+          } else {
             if (_url == '') {
               return NoInternetScreen();
             }
             return WebViewScreen(_url);
-          // }
+          }
         }
       },
     );
