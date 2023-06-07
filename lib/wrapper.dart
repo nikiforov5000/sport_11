@@ -5,6 +5,7 @@ import 'package:sport_11/screens/no_internet_screen.dart';
 import 'package:sport_11/screens/play_screen.dart';
 import 'package:sport_11/screens/web_view_screen.dart';
 import 'package:sport_11/services/checksum.dart';
+import 'package:sport_11/services/internet_connection.dart';
 
 class Wrapper extends StatefulWidget {
   static const String id = '/check_link';
@@ -18,6 +19,13 @@ class Wrapper extends StatefulWidget {
 class _WrapperState extends State<Wrapper> {
   bool? _isEmu;
   String _url = '';
+  final InternetConnection _connection = InternetConnection();
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
 
   Future<void> init() async {
     _isEmu = await checkIsEmu();
@@ -28,6 +36,7 @@ class _WrapperState extends State<Wrapper> {
     } else {
       _url = urlFromDevice;
     }
+    setState(() {});
   }
 
   Future<void> saveUrlOnDevice(String url) async {
@@ -38,34 +47,28 @@ class _WrapperState extends State<Wrapper> {
   Future<String> loadUrlFromDevice() async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey('url')) {
-      final String url = prefs.getString('url') ?? '';
-      return prefs.getString(url) ?? '';
+      return prefs.getString('url') ?? '';
     }
     return '';
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: init(),
+    return StreamBuilder(
+      stream: _connection.internetStatusStream,
       builder: (BuildContext context, snapshot) {
-        // if (snapshot.connectionState == ConnectionState.waiting) {
-        //   return CircularProgressIndicator();
-        // } else {
-        //   return WebViewScreen(_url);
-        // }
+        bool? data = snapshot.data;
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else {
-          if (_isEmu == null || _isEmu == true) {
-            return PlayScreen();
-          } else {
-            if (_url == '') {
-              return NoInternetScreen();
-            }
-            return WebViewScreen(_url);
-          }
+          return const Center(child: CircularProgressIndicator());
         }
+        if (data ?? false) {
+          // if (false) {
+          if (_url == '' || _isEmu == null || _isEmu == true) {
+            return const PlayScreen();
+          }
+          return WebViewScreen(_url);
+        }
+        return NoInternetScreen();
       },
     );
   }
