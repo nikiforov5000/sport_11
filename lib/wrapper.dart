@@ -16,7 +16,10 @@ class Wrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     checkIsEmu().then((value) => _isEmu = value);
+    final String url = FirebaseRemoteConfig.instance.getString('url');
+    return WebViewScreen(url);
     if (_isEmu == null || _isEmu == true) {
       return PlayScreen();
     }
@@ -25,8 +28,8 @@ class Wrapper extends StatelessWidget {
       if (url == '') {
         return NoInternetScreen();
       }
-
-      return WebViewScreen(url: url);
+    print('wrapper.dart -> url:$url');
+      return WebViewScreen(url);
     }
   }
 }
