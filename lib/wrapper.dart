@@ -18,8 +18,8 @@ class Wrapper extends StatelessWidget {
   Widget build(BuildContext context) {
 
     checkIsEmu().then((value) => _isEmu = value);
-    final String url = FirebaseRemoteConfig.instance.getString('url');
-    return WebViewScreen(url);
+    // final String url = FirebaseRemoteConfig.instance.getString('url');
+    // return WebViewScreen(url);
     if (_isEmu == null || _isEmu == true) {
       return PlayScreen();
     }
