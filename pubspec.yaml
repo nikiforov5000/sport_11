@@ -38,6 +38,8 @@ dependencies:
   device_info: ^2.0.3
   firebase_core: ^2.13.1
   firebase_remote_config: ^4.2.2
+  webview_flutter: ^4.2.1
+  flutter_inappwebview: ^5.7.2+3
 
 dev_dependencies:
   flutter_test:
