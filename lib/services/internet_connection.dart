@@ -4,6 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class InternetConnection {
+  bool _prevStatus = true;
+  bool _currentStatus = false;
+  
   final StreamController<bool> _internetStatusController =
       StreamController<bool>.broadcast();
 
@@ -21,10 +24,16 @@ class InternetConnection {
   Future<void> _checkInternetConnection() async {
     try {
       final response = await http.get(Uri.parse('https://www.google.com'));
-      _internetStatusController.add(response.statusCode == 200);
+      _currentStatus = response.statusCode == 200;
+      debugPrint('_prevStatus:$_prevStatus');
+      debugPrint('currentStatus:$_currentStatus');
     } catch (e) {
       debugPrint(e.toString());
-      _internetStatusController.add(false);
+      _currentStatus = false;
+    }
+    if (_prevStatus != (_currentStatus)) {
+      _internetStatusController.add(_currentStatus);
+      _prevStatus = _currentStatus;
     }
   }
 
