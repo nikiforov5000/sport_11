@@ -33,7 +33,7 @@ class GameTimer {
       oneTenthOfSecond,
       (Timer timer) {
         if (kDebugMode) {
-          print('game_timer.dart -> timer:$_timeLeft');
+          // debugPrint('game_timer.dart -> timer:$_timeLeft');
         }
         if (_timeLeft < 1) {
           _controller.add(_timeLeft);

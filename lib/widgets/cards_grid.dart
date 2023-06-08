@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:sport_11/screens/play_screen/controllers/game_controller.dart';
-import 'package:sport_11/screens/play_screen/models/game_timer.dart';
-import 'package:sport_11/screens/play_screen/widgets/flipping_card_widget.dart';
+import 'package:sport_11/controllers/game_controller.dart';
+import 'package:sport_11/models/game_timer.dart';
+import 'package:sport_11/widgets/flipping_card_widget.dart';
 
 class CardsGrid extends StatefulWidget {
   const CardsGrid({Key? key}) : super(key: key);

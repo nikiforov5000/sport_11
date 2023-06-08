@@ -31,7 +31,7 @@ class ProgressBar extends StatelessWidget {
             alignment: AlignmentDirectional.center,
             children: [
               const ProgressBackground(),
-              ProgressForeground(value: value ?? 0),
+              ProgressForeground(value: value),
             ],
           ),
         ),

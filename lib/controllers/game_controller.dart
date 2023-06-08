@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:sport_11/screens/play_screen/models/flipping_card.dart';
-import 'package:sport_11/screens/play_screen/models/front_image.dart';
-import 'package:sport_11/screens/play_screen/models/game_timer.dart';
+import 'package:sport_11/models/flipping_card.dart';
+import 'package:sport_11/models/front_image.dart';
+import 'package:sport_11/models/game_timer.dart';
+
 
 class GameController {
   static final List<FlippingCard> _list = [];

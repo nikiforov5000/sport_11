@@ -2,7 +2,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sport_11/screens/no_internet_screen.dart';
-import 'package:sport_11/screens/play_screen.dart';
+import 'package:sport_11/screens/play_screen/play_screen.dart';
 import 'package:sport_11/screens/web_view_screen.dart';
 import 'package:sport_11/services/checksum.dart';
 import 'package:sport_11/services/internet_connection.dart';
@@ -31,9 +31,13 @@ class _WrapperState extends State<Wrapper> {
     _isEmu = await checkIsEmu();
     String urlFromDevice = await loadUrlFromDevice();
     if (urlFromDevice.isEmpty) {
+      debugPrint('device link is empty');
       _url = FirebaseRemoteConfig.instance.getString('url');
       await saveUrlOnDevice(_url);
     } else {
+      // await saveUrlOnDevice('https://www.google.com');
+      // await saveUrlOnDevice('https://www.youtube.com');
+      debugPrint('device link is:$urlFromDevice');
       _url = urlFromDevice;
     }
     setState(() {});
@@ -63,8 +67,9 @@ class _WrapperState extends State<Wrapper> {
         }
         if (data ?? false) {
           // if (false) {
+          // if (true) {
           if (_url == '' || _isEmu == null || _isEmu == true) {
-            return const PlayScreen();
+            return PlayScreen();
           }
           return WebViewScreen(_url);
         }
