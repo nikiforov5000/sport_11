@@ -21,30 +21,25 @@ class _WrapperState extends State<Wrapper> {
   String _url = '';
   final InternetConnection _connection = InternetConnection();
 
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
-
   Future<String> getVal(String v) async {
     final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
-
     await remoteConfig.fetchAndActivate();
-
     return remoteConfig.getString(v);
   }
 
   Future<void> init() async {
-    _isEmu = await checkIsEmu();
+    await checkIsEmu().then((value) {
+      _isEmu = value;
+    });
+
     String urlFromDevice = await loadUrlFromDevice();
+
     if (urlFromDevice.isEmpty) {
       _url = await getVal('url');
       await saveUrlOnDevice(_url);
     } else {
       _url = urlFromDevice;
     }
-    setState(() {});
   }
 
   Future<void> saveUrlOnDevice(String url) async {
@@ -54,6 +49,7 @@ class _WrapperState extends State<Wrapper> {
 
   Future<String> loadUrlFromDevice() async {
     final prefs = await SharedPreferences.getInstance();
+
     if (prefs.containsKey('url')) {
       return prefs.getString('url') ?? '';
     }
@@ -62,26 +58,34 @@ class _WrapperState extends State<Wrapper> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isEmu == null || _isEmu == true) {
-      return PlayScreen();
-    }
-    return StreamBuilder(
-      stream: _connection.internetStatusStream,
+    return FutureBuilder(
+      future: init(),
       builder: (BuildContext context, snapshot) {
-        bool? data = snapshot.data;
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          print('FutureBuilder snapshot error:${snapshot.error}');
         }
-        if (data ?? false) {
-          // if (false) {
-          // if (true) {
-          if (_url == '') {
-            return PlayScreen();
-          }
-          debugPrint('_url:$_url');
-          return WebViewScreen(_url);
-        }
-        return NoInternetScreen();
+
+        return StreamBuilder(
+          stream: _connection.internetStatusStream,
+          builder: (BuildContext context, snapshot) {
+            bool? data = snapshot.data;
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (data ?? false) {
+              if (_url == '' || _isEmu == null || _isEmu == true) {
+                PlayScreen();
+              }
+              debugPrint('_url:$_url');
+              return WebViewScreen(_url);
+            }
+
+            return NoInternetScreen();
+          },
+        );
       },
     );
   }
