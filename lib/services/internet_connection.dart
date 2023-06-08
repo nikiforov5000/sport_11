@@ -10,7 +10,7 @@ class InternetConnection {
 
   InternetConnection() {
     Timer.periodic(
-      const Duration(seconds: 10),
+      const Duration(seconds: 2),
       (Timer t) {
         Connectivity()
             .onConnectivityChanged
