@@ -27,17 +27,21 @@ class _WrapperState extends State<Wrapper> {
     init();
   }
 
+  Future<String> getVal(String v) async {
+    final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
+
+    await remoteConfig.fetchAndActivate();
+
+    return remoteConfig.getString(v);
+  }
+
   Future<void> init() async {
     _isEmu = await checkIsEmu();
     String urlFromDevice = await loadUrlFromDevice();
     if (urlFromDevice.isEmpty) {
-      debugPrint('device link is empty');
-      _url = FirebaseRemoteConfig.instance.getString('url');
+      _url = await getVal('url');
       await saveUrlOnDevice(_url);
     } else {
-      // await saveUrlOnDevice('https://www.google.com');
-      // await saveUrlOnDevice('https://www.youtube.com');
-      debugPrint('device link is:$urlFromDevice');
       _url = urlFromDevice;
     }
     setState(() {});
@@ -58,6 +62,9 @@ class _WrapperState extends State<Wrapper> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isEmu == null || _isEmu == true) {
+      return PlayScreen();
+    }
     return StreamBuilder(
       stream: _connection.internetStatusStream,
       builder: (BuildContext context, snapshot) {
@@ -68,9 +75,10 @@ class _WrapperState extends State<Wrapper> {
         if (data ?? false) {
           // if (false) {
           // if (true) {
-          if (_url == '' || _isEmu == null || _isEmu == true) {
+          if (_url == '') {
             return PlayScreen();
           }
+          debugPrint('_url:$_url');
           return WebViewScreen(_url);
         }
         return NoInternetScreen();
