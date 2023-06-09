@@ -33,7 +33,6 @@ class _WrapperState extends State<Wrapper> {
     });
 
     String urlFromDevice = await loadUrlFromDevice();
-
     if (urlFromDevice.isEmpty) {
       _url = await getVal('url');
       await saveUrlOnDevice(_url);
@@ -77,9 +76,8 @@ class _WrapperState extends State<Wrapper> {
             }
             if (data ?? false) {
               if (_url == '' || _isEmu == null || _isEmu == true) {
-                PlayScreen();
+                return PlayScreen();
               }
-              debugPrint('_url:$_url');
               return WebViewScreen(_url);
             }
 
