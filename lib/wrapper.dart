@@ -1,3 +1,4 @@
+import 'package:check_vpn_connection/check_vpn_connection.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,8 +35,13 @@ class _WrapperState extends State<Wrapper> {
   }
   
   Future<bool> vpnActive() async {
-    return true;
+    if (await CheckVpnConnection.isVpnActive()) {
+      return true;
+    }else {
+      return false;
+    }
   }
+
   Future<bool> battery() async {
     return true;
   }
