@@ -73,9 +73,7 @@ class _WrapperState extends State<Wrapper> {
           stream: _connection.internetStatusStream,
           builder: (BuildContext context, snapshot) {
             bool? data = snapshot.data;
-
             if (snapshot.connectionState == ConnectionState.waiting) {
-
               return const Center(child: CircularProgressIndicator());
             }
             if (data ?? false) {
