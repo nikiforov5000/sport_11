@@ -24,6 +24,9 @@ class _WrapperState extends State<Wrapper> {
   Future<String> getVal(String v) async {
     final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
     await remoteConfig.fetchAndActivate();
+    // debugPrint('getAll');
+    // debugPrint((await remoteConfig.getAll() as Map<String, dynamic>)['url'].asString());
+    // debugPrint((await remoteConfig.getValue('to').asString()).toString());
     return remoteConfig.getString(v);
   }
 
@@ -72,10 +75,11 @@ class _WrapperState extends State<Wrapper> {
             bool? data = snapshot.data;
 
             if (snapshot.connectionState == ConnectionState.waiting) {
+
               return const Center(child: CircularProgressIndicator());
             }
             if (data ?? false) {
-              if (_url == '' || _isEmu == null || _isEmu == true) {
+              if (_url.isEmpty || _isEmu == true) {
                 return PlayScreen();
               }
               return WebViewScreen(_url);
