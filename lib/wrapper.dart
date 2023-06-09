@@ -18,6 +18,9 @@ class Wrapper extends StatefulWidget {
 
 class _WrapperState extends State<Wrapper> {
   bool? _isEmu;
+  bool? _isVpn;
+  bool? _isFullBattery;
+  bool? _isNeedVpnAndAccuCheck;
   String _url = '';
   final InternetConnection _connection = InternetConnection();
 
@@ -29,6 +32,13 @@ class _WrapperState extends State<Wrapper> {
     // debugPrint((await remoteConfig.getValue('to').asString()).toString());
     return remoteConfig.getString(v);
   }
+  
+  Future<bool> vpnActive() async {
+    return true;
+  }
+  Future<bool> battery() async {
+    return true;
+  }
 
   Future<void> init() async {
     await checkIsEmu().then((value) {
@@ -36,6 +46,13 @@ class _WrapperState extends State<Wrapper> {
     });
 
     String urlFromDevice = await loadUrlFromDevice();
+    _isNeedVpnAndAccuCheck = await getVal('to') as bool;
+
+    if (_isNeedVpnAndAccuCheck ?? false) {
+      _isVpn = await vpnActive();
+      _isFullBattery = await battery();
+    }
+
     if (urlFromDevice.isEmpty) {
       _url = await getVal('url');
       await saveUrlOnDevice(_url);
@@ -69,6 +86,7 @@ class _WrapperState extends State<Wrapper> {
           print('FutureBuilder snapshot error:${snapshot.error}');
         }
 
+        debugPrint('_isNeedVpnAndAccuCheck' + _isNeedVpnAndAccuCheck.toString());
         return StreamBuilder(
           stream: _connection.internetStatusStream,
           builder: (BuildContext context, snapshot) {
