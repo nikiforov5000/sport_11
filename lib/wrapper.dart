@@ -58,7 +58,6 @@ class _WrapperState extends State<Wrapper> {
     String urlFromDevice = await loadUrlFromDevice();
     print('urlFromDevice');
     _isNeedBattAndVpnCheck = (await getVal('to')).asBool();
-    _isNeedBattAndVpnCheck = true;
 
     if (_isNeedBattAndVpnCheck ?? false) {
       _isVpn = await vpnActive();
